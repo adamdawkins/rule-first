@@ -1,0 +1,38 @@
+body {
+  font-family: sans-serif;
+  box-sizing: border-box;
+}
+
+.rule {
+  margin: 0 .5em;
+  background: #ccc;
+  border-radius: 50%;
+  height: 30px;
+  width: 30px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border: 3px solid #ccc;
+
+  &.active {
+    background: yellow;
+    border-color: black;
+  }
+
+  &.highlighted {
+    background: rgba(255, 255, 0, .5);
+  }
+}
+
+.options {
+  display: flex;
+  flex-flow: row wrap;
+}
+.option {
+  background: #eee;
+  flex: 1 0 45%;
+  margin: 1em;
+  padding: 1em;
+  max-width: 45%;
+}
