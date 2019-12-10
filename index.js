@@ -77,6 +77,14 @@ const isDisabled = (state, optionId) => {
   return disabled;
 };
 
+const addPackContents = curry((packId, contents, state) => ({
+  ...state,
+  options: {
+    ...state.options,
+    [packId]: { ...state.options[packId], contents }
+  }
+}));
+
 //    createOption :: (String, String, category) -> Object
 const createOption = (name, ruleId, category) => ({
   name,
@@ -502,7 +510,18 @@ const getInitialState = () => {
       "Space saving spare wheel",
       "other"
     ]),
-    addOption(["7062347", "RA", "140071", 1, "Tool kit and Jack", "other"])
+    addOption(["7062347", "RA", "140071", 1, "Tool kit and Jack", "other"]),
+    addPackContents("125089", [
+      "Heated front seats",
+      "Rear view camera",
+      "Bang + Olufsen 3D sound system",
+      "Audi parking system plus"
+    ]),
+    addPackContents("139671", [
+      "Front centre armrest",
+      "Privacy glass",
+      "Dual zone electronic climate control"
+    ])
   )({
     rules: {},
     options: {},
@@ -528,6 +547,7 @@ const getInitialState = () => {
 };
 
 // VIEWS
+
 const Option = ({ option, state }) => {
   const status = getStatus(state, option.id);
   return (
@@ -541,6 +561,13 @@ const Option = ({ option, state }) => {
         />
         {option.name}
       </label>
+      {option.category === "packs" ? (
+        <ul>
+          {option.contents.map(content => (
+            <li>{content}</li>
+          ))}
+        </ul>
+      ) : null}
     </div>
   );
 };
