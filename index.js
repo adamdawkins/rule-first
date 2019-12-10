@@ -1,5 +1,7 @@
 const { curry, pipe } = require("ramda");
-const contains = (list, item) => list.indexOf(item) > -1;
+
+//    contains :: [a] -> a -> Boolean
+const contains = curry((list, item) => list.indexOf(item) > -1);
 
 //    selectOption :: String -> State -> State
 const selectOption = curry((optionId, state) => {
@@ -23,31 +25,50 @@ const getStatus = (state, optionId) => {
   return "AVAILABLE";
 };
 
-//    isSelected :: (State, String) -> Boolean
-const isSelected = (state, optionId) => contains(state.selected, optionId);
+//    isSelected :: State -> String -> Boolean
+const isSelected = curry((state, optionId) =>
+  contains(state.selected, optionId)
+);
 
 //    isDisabled :: (State, String) -> Boolean
 const isDisabled = (state, optionId) => {
   let disabled = false;
   const option = state.options[optionId];
 
-  state.activeRules.map(ruleId => {
+  option.rules.some(ruleId => {
     const rule = state.rules[ruleId];
 
-    if (contains(option.rules, ruleId)) {
-      if (rule.type === "OO") {
-        rule.childOptions.map(option => {
-          if (contains(state.selected, option)) disabled = true;
+    if (rule.type === "RA" && rule.parentOption === optionId) {
+      disabled = !rule.childOptions.every(isSelected(state));
+      if (disabled) return true;
+    }
+
+    if (rule.type === "RO" && rule.parentOption === optionId) {
+      disabled = !rule.childOptions.some(isSelected(state));
+      if (disabled) return true;
+    }
+    if (rule.type === "OO" && contains(state.activeRules, ruleId)) {
+      rule.childOptions.some(option => {
+        if (contains(state.selected, option)) {
+          disabled = true;
+          return true;
+        }
+      });
+
+      if (disabled) return true;
+    }
+
+    if (rule.type === "NW" && contains(state.activeRules, ruleId)) {
+      rule.childOptions
+        .concat([rule.parentOption])
+        .filter(id => id !== optionId)
+        .map(option => {
+          if (contains(state.selected, option)) {
+            disabled = true;
+            return true;
+          }
         });
-      }
-      if (rule.type === "NW") {
-        rule.childOptions
-          .concat([rule.parentOption])
-          .filter(id => id !== optionId)
-          .map(option => {
-            if (contains(state.selected, option)) disabled = true;
-          });
-      }
+      if (disabled) return true;
     }
   });
 
@@ -63,7 +84,7 @@ const createRule = (ruleId, type) => ({
 
 const addOptionToRule = (optionId, isPrimary, rule) => ({
   ...rule,
-  parentOption: isPrimary ? optionId : rule.primary,
+  parentOption: isPrimary ? optionId : rule.parentOption,
   childOptions: isPrimary
     ? rule.childOptions
     : rule.childOptions.concat([optionId])
@@ -200,21 +221,21 @@ let TheState = pipe(
     "7062192",
     "NW",
     "125089",
-    "1",
+    1,
     "Comfort and sound pack - A1 Sportback"
   ]),
   addOption([
     "7062192",
     "NW",
     "125089",
-    "1",
+    1,
     "Comfort and sound pack - A1 Sportback"
   ]),
   addOption([
     "7062192",
     "NW",
     "125089",
-    "1",
+    1,
     "Comfort and sound pack - A1 Sportback"
   ]),
   addOption(["7062192", "NW", "129808", 0, "6 passive loudspeakers"]),
@@ -222,13 +243,12 @@ let TheState = pipe(
   addOption(["7062347", "RA", "140070", 0, "Space saving spare wheel"]),
   addOption(["7062347", "RA", "140071", 1, "Tool kit and Jack"]),
   selectOption("20844"),
-  print,
   selectOption("111416"),
-  selectOption("125089")
+  selectOption("125089"),
+  print
 )({
   rules: {},
   options: {},
   selected: [],
   activeRules: []
 });
-print(TheState);
