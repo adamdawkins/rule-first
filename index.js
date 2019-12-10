@@ -542,9 +542,20 @@ const getInitialState = () => {
       size: 6,
       hasPrevious: false,
       hasNext: true
-    }
+    },
+    basePrice: 20330.0
   });
 };
+
+//    selectedOptionPrices :: State -> Float
+const selectedOptionPrices = state => 0.0;
+
+//    initialPayment :: State -> Float
+const initialPayment = state => (monthlyPrice(state) * 9).toFixed(2);
+
+//    monthlyPrice :: State -> Float
+const monthlyPrice = state =>
+  ((state.basePrice + selectedOptionPrices(state)) / (47 + 9)).toFixed(2);
 
 // VIEWS
 
@@ -576,20 +587,27 @@ app({
   view: state => {
     console.log({ state });
     return (
-      <div>
-        <ul>
-          {state.categories.values.map(name => (
-            <li>
-              {name === state.categories.current ? name.toUpperCase() : name}
-            </li>
-          ))}
-        </ul>
-        {collection(state.options)
-          .filter(({ category }) => category === state.categories.current)
-          .map(option => (
-            <Option option={option} state={state} />
-          ))}
-        <button onclick={NextCategory}>Next</button>
+      <div class="container">
+        <div class="options">
+          <ul class="nav">
+            {state.categories.values.map(name => (
+              <li class="nav-item">
+                {name === state.categories.current ? name.toUpperCase() : name}
+              </li>
+            ))}
+          </ul>
+          {collection(state.options)
+            .filter(({ category }) => category === state.categories.current)
+            .map(option => (
+              <Option option={option} state={state} />
+            ))}
+          <button onclick={NextCategory}>Next</button>
+        </div>
+        <div class="basket">
+          <h2>Your A1 Sportback</h2>
+          <h3 class="total">£{monthlyPrice(state)}/mo</h3>
+          <span>initial payment: £{initialPayment(state)}</span>
+        </div>
       </div>
     );
   },
