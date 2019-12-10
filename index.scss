@@ -1,42 +1,78 @@
+
 body {
   font-family: sans-serif;
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-.rule {
-  margin: 0 .5em;
-  background: #ccc;
-  border-radius: 50%;
-  height: 30px;
-  width: 30px;
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  border: 3px solid #ccc;
+.container {
+  display: grid;
+  grid-gap: 10px;
+  height: 100vh;
+  grid-template-columns: 70% 30%;
+  grid-template-rows: 40px auto;
+  grid-template-areas:
+  "nav nav"
+  "options basket";
+}
 
-  &.active {
-    background: yellow;
-    border-color: black;
+.nav {
+  grid-area: nav;
+  background: #333;
+  color: white;
+  display: flex;
+  list-style-type: none;
+  padding: .5em .5em 0;
+  margin: 0;
+
+  .nav-item {
+    padding: 0 0 5px;
+    margin: 0 10px;
+    border-bottom: 3px solid transparent;
+
+    &.selected {
+      border-bottom-color: red;
+      color: red;
+    }
+
   }
 
-  &.highlighted {
-    background: rgba(255, 255, 0, .5);
-  }
+}
+
+.basket {
+  grid-area: basket;
+  background: #eee;
+  padding: 2em;
 }
 
 .options {
+  grid-area: options;
   display: flex;
   flex-flow: row wrap;
 }
+
+
 .option {
   background: #eee;
-  flex: 1 0 45%;
   margin: 1em;
   padding: 1em;
-  max-width: 45%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 40%;
+  max-height: 300px;
 
   &.disabled {
     opacity: .3
   }
+}
+
+.next-button {
+  color: white;
+  background: blue;
+  border: 0;
+  padding: 0 1em;
+  font-size: 1.2em;
 }

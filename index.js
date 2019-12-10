@@ -588,20 +588,28 @@ app({
     console.log({ state });
     return (
       <div class="container">
+        <ul class="nav">
+          {state.categories.values.map(name => (
+            <li
+              class={`nav-item ${
+                name === state.categories.current ? "selected" : ""
+              }`}
+            >
+              {name}
+            </li>
+          ))}
+          <li style={{ marginLeft: "auto", marginRight: "3em" }}>
+            <button class="next-button" onclick={NextCategory}>
+              Next
+            </button>
+          </li>
+        </ul>
         <div class="options">
-          <ul class="nav">
-            {state.categories.values.map(name => (
-              <li class="nav-item">
-                {name === state.categories.current ? name.toUpperCase() : name}
-              </li>
-            ))}
-          </ul>
           {collection(state.options)
             .filter(({ category }) => category === state.categories.current)
             .map(option => (
               <Option option={option} state={state} />
             ))}
-          <button onclick={NextCategory}>Next</button>
         </div>
         <div class="basket">
           <h2>Your A1 Sportback</h2>
