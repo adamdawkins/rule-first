@@ -26,6 +26,8 @@ const isSelected = curry((state, optionId) =>
   contains(state.selected, optionId)
 );
 
+const selectedOptions = state => state.selected.map(id => state.options[id]);
+
 const allOptions = rule => rule.childOptions.concat([rule.parentOption]);
 
 const numberOfSelectedOptionsForRule = (state, rule) =>
@@ -86,9 +88,10 @@ const addPackContents = curry((packId, contents, state) => ({
 }));
 
 //    createOption :: (String, String, category) -> Object
-const createOption = (name, ruleId, category) => ({
+const createOption = (name, ruleId, category, price) => ({
   name,
   category,
+  price,
   rules: [ruleId]
 });
 
@@ -109,22 +112,23 @@ const addOptionToRule = (optionId, isPrimary, rule) => ({
 });
 
 //    findOrCreateOption :: (State, String, String, String, category) -> Option
-const findOrCreateOption = (state, optionId, name, ruleId, category) =>
-  state.options[optionId] || createOption(name, ruleId, category);
+const findOrCreateOption = (state, optionId, name, ruleId, category, price) =>
+  state.options[optionId] || createOption(name, ruleId, category, price);
 
 //    findOrCreateRule :: (State, String, String) -> Rule
 const findOrCreateRule = (state, ruleId, type) =>
   state.rules[ruleId] || createRule(ruleId, type);
 
-//    addOption :: [string, string, string, int, string, string] -> State -> State
+//    addOption :: [string, string, string, int, string, string, float] -> State -> State
 const addOption = curry((option, state) => {
-  const [ruleId, type, optionId, primary, name, category] = option;
+  const [ruleId, type, optionId, primary, name, category, price] = option;
   const updatedOption = findOrCreateOption(
     state,
     optionId,
     name,
     ruleId,
-    category
+    category,
+    price
   );
   updatedOption.rules.push(ruleId);
 
@@ -202,15 +206,32 @@ const DeSelectOption = (state, optionId) => ({
 
 const getInitialState = () => {
   return pipe(
-    addOption(["7060187", "OO", "20844", 0, "Pearl - Arrow Grey", "colour"]),
-    addOption(["7060187", "OO", "27128", 0, "Pearl - Misano Red", "colour"]),
+    addOption([
+      "7060187",
+      "OO",
+      "20844",
+      0,
+      "Pearl - Arrow Grey",
+      "colour",
+      479.17
+    ]),
+    addOption([
+      "7060187",
+      "OO",
+      "27128",
+      0,
+      "Pearl - Misano Red",
+      "colour",
+      479.17
+    ]),
     addOption([
       "7060187",
       "OO",
       "93020",
       0,
       "Metallic - Glacier white",
-      "colour"
+      "colour",
+      479.17
     ]),
     addOption([
       "7060187",
@@ -218,16 +239,26 @@ const getInitialState = () => {
       "104177",
       0,
       "Metallic - Mythos black",
-      "colour"
+      "colour",
+      479.17
     ]),
-    addOption(["7060187", "OO", "105356", 0, "Solid - Shell white", "colour"]),
+    addOption([
+      "7060187",
+      "OO",
+      "105356",
+      0,
+      "Solid - Shell white",
+      "colour",
+      0.0
+    ]),
     addOption([
       "7060187",
       "OO",
       "111413",
       0,
       "Metallic - Manhattan grey",
-      "colour"
+      "colour",
+      479.17
     ]),
     addOption([
       "7060187",
@@ -235,7 +266,8 @@ const getInitialState = () => {
       "122473",
       0,
       "Metallic - Firmament blue",
-      "colour"
+      "colour",
+      479.17
     ]),
     addOption([
       "7060187",
@@ -243,7 +275,8 @@ const getInitialState = () => {
       "125093",
       0,
       "Metallic - Python yellow",
-      "colour"
+      "colour",
+      479.17
     ]),
     addOption([
       "7060187",
@@ -251,7 +284,8 @@ const getInitialState = () => {
       "129827",
       0,
       "Special solid - Tioman green",
-      "colour"
+      "colour",
+      479.17
     ]),
     addOption([
       "7060188",
@@ -259,7 +293,8 @@ const getInitialState = () => {
       "97650",
       0,
       "16 10 Spoke design alloy wheels",
-      "wheels"
+      "wheels",
+      208.33
     ]),
     addOption([
       "7060188",
@@ -267,7 +302,8 @@ const getInitialState = () => {
       "111416",
       0,
       "17 5 arm star design alloy wheels",
-      "wheels"
+      "wheels",
+      625.0
     ]),
     addOption([
       "7060188",
@@ -275,7 +311,8 @@ const getInitialState = () => {
       "125055",
       "0",
       "16 10 spoke turbine design alloy wheels",
-      "wheels"
+      "wheels",
+      0.0
     ]),
     addOption([
       "7060189",
@@ -283,7 +320,8 @@ const getInitialState = () => {
       "78562",
       "0",
       "3 spoke flat bottomed multi-function leather steering wheel",
-      "other"
+      "other",
+      208.33
     ]),
     addOption([
       "7060189",
@@ -291,7 +329,8 @@ const getInitialState = () => {
       "129818",
       "0",
       "3 spoke leather multifunction plus steering wheel",
-      "other"
+      "other",
+      0.0
     ]),
     addOption([
       "7060191",
@@ -299,7 +338,8 @@ const getInitialState = () => {
       "125084",
       0,
       "Contrast roof - Manhattan grey",
-      "exterior body features"
+      "exterior body features",
+      354.17
     ]),
     addOption([
       "7060191",
@@ -307,17 +347,35 @@ const getInitialState = () => {
       "125085",
       0,
       "Contrast roof - Mythos black",
-      "exterior body features"
+      "exterior body features",
+      354.17
     ]),
-    addOption(["7060203", "RO", "20844", 0, "Pearl - Arrow Grey", "colour"]),
-    addOption(["7060203", "RO", "27128", 0, "Pearl - Misano Red", "colour"]),
+    addOption([
+      "7060203",
+      "RO",
+      "20844",
+      0,
+      "Pearl - Arrow Grey",
+      "colour",
+      479.17
+    ]),
+    addOption([
+      "7060203",
+      "RO",
+      "27128",
+      0,
+      "Pearl - Misano Red",
+      "colour",
+      479.17
+    ]),
     addOption([
       "7060203",
       "RO",
       "93020",
       0,
       "Metallic - Glacier white",
-      "colour"
+      "colour",
+      479.17
     ]),
     addOption([
       "7060203",
@@ -325,7 +383,8 @@ const getInitialState = () => {
       "104177",
       0,
       "Metallic - Mythos black",
-      "colour"
+      "colour",
+      479.17
     ]),
     addOption([
       "7060203",
@@ -333,7 +392,8 @@ const getInitialState = () => {
       "122473",
       0,
       "Metallic - Firmament blue",
-      "colour"
+      "colour",
+      479.17
     ]),
     addOption([
       "7060203",
@@ -341,7 +401,8 @@ const getInitialState = () => {
       "125084",
       1,
       "Contrast roof - Manhattan grey",
-      "exterior body features"
+      "exterior body features",
+      479.17
     ]),
     addOption([
       "7060203",
@@ -349,7 +410,8 @@ const getInitialState = () => {
       "125093",
       0,
       "Metallic - Python yellow",
-      "colour"
+      "colour",
+      479.17
     ]),
     addOption([
       "7060203",
@@ -357,17 +419,35 @@ const getInitialState = () => {
       "129827",
       0,
       "Special solid - Tioman green",
-      "colour"
+      "colour",
+      479.17
     ]),
-    addOption(["7060204", "RO", "20844", 0, "Pearl - Arrow Grey", "colour"]),
-    addOption(["7060204", "RO", "27128", 0, "Pearl - Misano Red", "colour"]),
+    addOption([
+      "7060204",
+      "RO",
+      "20844",
+      0,
+      "Pearl - Arrow Grey",
+      "colour",
+      479.17
+    ]),
+    addOption([
+      "7060204",
+      "RO",
+      "27128",
+      0,
+      "Pearl - Misano Red",
+      "colour",
+      479.17
+    ]),
     addOption([
       "7060204",
       "RO",
       "93020",
       0,
       "Metallic - Glacier white",
-      "colour"
+      "colour",
+      479.17
     ]),
     addOption([
       "7060204",
@@ -375,7 +455,8 @@ const getInitialState = () => {
       "111413",
       0,
       "Metallic - Manhattan grey",
-      "colour"
+      "colour",
+      479.17
     ]),
     addOption([
       "7060204",
@@ -383,7 +464,8 @@ const getInitialState = () => {
       "122473",
       0,
       "Metallic - Firmament blue",
-      "colour"
+      "colour",
+      479.17
     ]),
     addOption([
       "7060204",
@@ -391,7 +473,8 @@ const getInitialState = () => {
       "125085",
       1,
       "Contrast roof - Mythos black",
-      "exterior body features"
+      "exterior body features",
+      354.17
     ]),
     addOption([
       "7060204",
@@ -399,7 +482,8 @@ const getInitialState = () => {
       "125093",
       0,
       "Metallic - Python yellow",
-      "colour"
+      "colour",
+      479.17
     ]),
     addOption([
       "7060204",
@@ -407,7 +491,8 @@ const getInitialState = () => {
       "129827",
       0,
       "Special solid - Tioman green",
-      "colour"
+      "colour",
+      479.17
     ]),
     addOption([
       "7060205",
@@ -415,7 +500,8 @@ const getInitialState = () => {
       "135657",
       0,
       "Novum cloth - Granite grey with mint contrast + front sport seats",
-      "trim"
+      "trim",
+      0.0
     ]),
     addOption([
       "7060205",
@@ -423,16 +509,26 @@ const getInitialState = () => {
       "143138",
       0,
       "Novum cloth - Granite grey  steel grey contrast stitching + front sport seats",
-      "trim"
+      "trim",
+      0.0
     ]),
-    addOption(["7062150", "OO", "1753", 0, "Manual air conditioning", "other"]),
+    addOption([
+      "7062150",
+      "OO",
+      "1753",
+      0,
+      "Manual air conditioning",
+      "other",
+      0
+    ]),
     addOption([
       "7062150",
       "OO",
       "139671",
       0,
       "Plus pack - A1 Sportback",
-      "packs"
+      "packs",
+      579.17
     ]),
     addOption([
       "7062151",
@@ -440,35 +536,37 @@ const getInitialState = () => {
       "140070",
       1,
       "Space saving spare wheel",
-      "other"
+      "other",
+      83.33
     ]),
-    addOption(["7062151", "RA", "140071", 0, "Tool kit and Jack", "other"]),
-    addOption(["7062153", "OO", "69372", 0, "Tyre repair kit", "other"]),
+    addOption([
+      "7062151",
+      "RA",
+      "140071",
+      0,
+      "Tool kit and Jack",
+      "other",
+      20.83
+    ]),
+    addOption(["7062153", "OO", "69372", 0, "Tyre repair kit", "other", 0]),
     addOption([
       "7062153",
       "OO",
       "140070",
       0,
       "Space saving spare wheel",
-      "other"
+      "other",
+      83.33
     ]),
-    addOption(["7062154", "OO", "2427", 0, "Tool kit", "other"]),
-    addOption(["7062154", "OO", "140071", 0, "Tool kit and Jack", "other"]),
+    addOption(["7062154", "OO", "2427", 0, "Tool kit", "other", 0]),
     addOption([
-      "7062192",
-      "NW",
-      "125089",
-      1,
-      "Comfort and sound pack - A1 Sportback",
-      "packs"
-    ]),
-    addOption([
-      "7062192",
-      "NW",
-      "125089",
-      1,
-      "Comfort and sound pack - A1 Sportback",
-      "packs"
+      "7062154",
+      "OO",
+      "140071",
+      0,
+      "Tool kit and Jack",
+      "other",
+      83.33
     ]),
     addOption([
       "7062192",
@@ -476,7 +574,8 @@ const getInitialState = () => {
       "125089",
       1,
       "Comfort and sound pack - A1 Sportback",
-      "packs"
+      "packs",
+      579.17
     ]),
     addOption([
       "7062192",
@@ -484,7 +583,26 @@ const getInitialState = () => {
       "125089",
       1,
       "Comfort and sound pack - A1 Sportback",
-      "packs"
+      "packs",
+      579.17
+    ]),
+    addOption([
+      "7062192",
+      "NW",
+      "125089",
+      1,
+      "Comfort and sound pack - A1 Sportback",
+      "packs",
+      579.17
+    ]),
+    addOption([
+      "7062192",
+      "NW",
+      "125089",
+      1,
+      "Comfort and sound pack - A1 Sportback",
+      "packs",
+      579.17
     ]),
     addOption([
       "7062192",
@@ -492,7 +610,8 @@ const getInitialState = () => {
       "129808",
       0,
       "6 passive loudspeakers",
-      "other"
+      "other",
+      0
     ]),
     addOption([
       "7062347",
@@ -500,7 +619,8 @@ const getInitialState = () => {
       "140070",
       0,
       "Space saving spare wheel",
-      "other"
+      "other",
+      83.33
     ]),
     addOption([
       "7062347",
@@ -508,9 +628,18 @@ const getInitialState = () => {
       "140070",
       0,
       "Space saving spare wheel",
-      "other"
+      "other",
+      83.33
     ]),
-    addOption(["7062347", "RA", "140071", 1, "Tool kit and Jack", "other"]),
+    addOption([
+      "7062347",
+      "RA",
+      "140071",
+      1,
+      "Tool kit and Jack",
+      "other",
+      20.83
+    ]),
     addPackContents("125089", [
       "Heated front seats",
       "Rear view camera",
@@ -548,14 +677,16 @@ const getInitialState = () => {
 };
 
 //    selectedOptionPrices :: State -> Float
-const selectedOptionPrices = state => 0.0;
+const selectedOptionPrices = state =>
+  selectedOptions(state).reduce((a, { price }) => a + price, 0);
 
 //    initialPayment :: State -> Float
-const initialPayment = state => (monthlyPrice(state) * 9).toFixed(2);
+const initialPayment = state => (price(total(state)) * 9).toFixed(2);
 
-//    monthlyPrice :: State -> Float
-const monthlyPrice = state =>
-  ((state.basePrice + selectedOptionPrices(state)) / (47 + 9)).toFixed(2);
+//    total :: State -> Float
+const total = state => state.basePrice + selectedOptionPrices(state);
+
+const price = amount => (amount / (47 + 9)).toFixed(2);
 
 // VIEWS
 
@@ -570,7 +701,7 @@ const Option = ({ option, state }) => {
           checked={status === "SELECTED"}
           onchange={[ToggleOption, option.id]}
         />
-        {option.name}
+        {option.name} (+£{price(option.price)}/mo)
       </label>
       {option.category === "packs" ? (
         <ul>
@@ -613,8 +744,16 @@ app({
         </div>
         <div class="basket">
           <h2>Your A1 Sportback</h2>
-          <h3 class="total">£{monthlyPrice(state)}/mo</h3>
+          <h3 class="total">£{price(total(state))}/mo</h3>
           <span>initial payment: £{initialPayment(state)}</span>
+          <div>
+            <h3>Your options</h3>
+            <ul>
+              {selectedOptions(state).map(option => (
+                <li>{option.name}</li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     );
